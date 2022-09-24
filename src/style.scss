@@ -1,0 +1,21 @@
+.n2-video-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 9998;
+
+  video {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+  }
+
+  #btnExit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+  }
+}

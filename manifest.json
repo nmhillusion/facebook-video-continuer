@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "FacebookVideoContinuer",
+  "version": "1.0",
+
+  "description": "Continue a new video after finished a video on Facebook",
+
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.facebook.com/watch*"],
+      "js": ["dist/content.js"]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "facebook-video-continuer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch-scss": "sass -w src:dist",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node dist/compile.js"
+  },
+  "keywords": [],
+  "author": "nmhillusion",
+  "license": "MIT",
+  "dependencies": {
+    "path": "^0.12.7",
+    "sass": "^1.54.8",
+    "typescript": "^4.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14"
+  }
+}
