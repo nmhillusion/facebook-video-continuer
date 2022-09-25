@@ -1,5 +1,5 @@
 const STORE = {
-  playedVideos: [],
+  playedVideos: [] as string[],
 };
 const URL_PATTERN = /https?:\/\/\w+\.facebook\.com\/watch.+?/;
 
@@ -28,7 +28,6 @@ function main() {
   videos.forEach((v) => {
     v.onended = (e) => {
       console.log("video ended: ", v);
-      STORE.playedVideos.push(v.src);
       v.remove();
       document.querySelector(".n2-video-container")?.remove();
 
@@ -40,6 +39,11 @@ function main() {
     };
 
     v.onplaying = async (e) => {
+      console.log("on playing video: ", v);
+
+      if (!STORE.playedVideos.find((sv) => sv === v.src)) {
+        STORE.playedVideos.push(v.src);
+      }
       await startLargerVideoMode(videos, v);
     };
   });
@@ -102,7 +106,7 @@ async function startLargerVideoMode(
       v.style.position = "static";
       v.style.height = "inherit";
 
-      document.body.removeChild(playerContainer);
+      document.querySelector(".n2-video-container")?.remove();
       parentNodeOfVideo.appendChild(v);
     };
   }
