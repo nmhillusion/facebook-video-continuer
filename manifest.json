@@ -11,7 +11,7 @@
 
   "content_scripts": [
     {
-      "matches": ["*://*.facebook.com/watch*"],
+      "matches": ["*://*.facebook.com/watch*", "*://*.facebook.com/*/watch*"],
       "js": ["dist/content.js"]
     }
   ]

@@ -20,8 +20,6 @@ function cssContent() {
 }
 
 function main() {
-  STORE.playedVideos = [];
-
   const videos = nodeListToArray(document.querySelectorAll("video"));
   console.log({ videos });
 
@@ -61,11 +59,10 @@ function startNewVideo(videos: HTMLVideoElement[]) {
   for (const v of videos) {
     if (!STORE.playedVideos.includes(v.src)) {
       console.log("prepare to start for video: ", v);
+      v.focus();
 
       const looper = setTimeout(() => {
         console.log("starting video: ", v);
-
-        v.focus();
         v.play();
 
         clearInterval(looper);
@@ -80,39 +77,48 @@ async function startLargerVideoMode(
   videos: HTMLVideoElement[],
   v: HTMLVideoElement
 ) {
-  console.log("start pictureInPicture for video: ", v);
+  if (ableToStartLargerVideoMode(v)) {
+    console.log("start pictureInPicture for video: ", v);
 
-  videos.forEach((vL) => {
-    vL.style.position = "static";
-    vL.style.height = "inherit";
-  });
+    videos.forEach((vL) => {
+      vL.style.position = "static";
+      vL.style.height = "inherit";
+    });
 
-  const parentNodeOfVideo = v.parentElement;
-  parentNodeOfVideo.removeChild(v);
+    v.parentElement?.remove();
 
-  const playerContainer = document.createElement("div");
-  playerContainer.classList.add("n2-video-container");
-  playerContainer.appendChild(v);
+    const playerContainer = document.createElement("div");
+    playerContainer.classList.add("n2-video-container");
+    playerContainer.appendChild(v);
 
-  {
-    const btnExit = document.createElement("button");
-    btnExit.textContent = "Exit";
-    btnExit.id = "btnExit";
-    playerContainer.appendChild(btnExit);
+    {
+      const btnExit = document.createElement("button");
+      btnExit.textContent = "Exit";
+      btnExit.id = "btnExit";
+      playerContainer.appendChild(btnExit);
 
-    btnExit.onclick = (e) => {
-      console.log("on click exit full size of video: ", v);
+      btnExit.onclick = (e) => {
+        console.log("on click exit full size of video: ", v);
 
-      v.style.position = "static";
-      v.style.height = "inherit";
+        v.style.position = "static";
+        v.style.height = "inherit";
 
-      document.querySelector(".n2-video-container")?.remove();
-      parentNodeOfVideo.appendChild(v);
-    };
+        document.querySelector(".n2-video-container")?.remove();
+        v.parentElement?.appendChild(v);
+      };
+    }
+    document.body.appendChild(playerContainer);
   }
-  document.body.appendChild(playerContainer);
 }
 
-setInterval(() => {
-  main();
-}, 3000);
+function ableToStartLargerVideoMode(v: HTMLVideoElement) {
+  return 10 <= v.duration - v.currentTime;
+}
+
+() => {
+  STORE.playedVideos = [];
+
+  setInterval(() => {
+    main();
+  }, 3000);
+};
