@@ -1,3 +1,5 @@
+const { doItOnce } = require("./func.util");
+
 const STORE = {
   playedVideos: [] as string[],
   CURRENT_STATE: {
@@ -18,15 +20,18 @@ function nodeListToArray<T extends Node>(nodeList: NodeListOf<T>) {
 }
 
 function cssContent() {
-  return `
-    {{ CSS_CONTENT }}
-  `;
+  return `{{ CSS_CONTENT }}`;
 }
 
 function onEndedVideo(videos: HTMLVideoElement[], v: HTMLVideoElement) {
   console.log("video ended: ", v);
-  v.remove();
-  document.querySelector(".n2-video-container")?.remove();
+  STORE.CURRENT_STATE = {
+    parentVideoNode: null,
+    videoEl: null,
+  };
+
+  console.log("prepare for playing video of href: ", location.href);
+  onExitLargerVideoMode(v, null);
 
   if (location.href.match(URL_PATTERN)) {
     startNewVideo(videos);
@@ -56,7 +61,9 @@ function onExitLargerVideoMode(
     oldParentVideo?.appendChild(v);
     // console.log("v.parentElement: ", v.parentElement);
   }
-  document.querySelector(".n2-video-container")?.remove();
+  document
+    .querySelectorAll(".n2-video-container")
+    .forEach((el) => el?.remove());
 }
 
 function main() {
@@ -96,26 +103,26 @@ function main() {
 }
 
 function startNewVideo(videos: HTMLVideoElement[]) {
+  let startedVideoSrc: string = null;
+  videos = nodeListToArray(document.querySelectorAll("video"));
+  console.log({ videos });
+
   for (const v of videos) {
     if (!STORE.playedVideos.includes(v.src)) {
       console.log("prepare to start for video: ", v);
-      v.scrollIntoView({
-        inline: "start",
-        behavior: "smooth",
-        block: "start",
-      });
+      startedVideoSrc = v.src;
+      v.scrollIntoView();
       v.focus();
 
-      const looper = setTimeout(() => {
+      doItOnce(5_000, () => {
         console.log("starting video: ", v);
         v.play();
-
-        clearInterval(looper);
-      }, 5_000);
+      });
 
       break;
     }
   }
+  console.log({ startedVideoSrc });
 }
 
 async function startLargerVideoMode(
@@ -142,7 +149,7 @@ async function startLargerVideoMode(
       btnExit.id = "btnExit";
       playerContainer.appendChild(btnExit);
 
-      btnExit.onclick = (e) => {
+      btnExit.onclick = async (e) => {
         onExitLargerVideoMode(oldParentVideo, v);
       };
     }
@@ -153,7 +160,10 @@ async function startLargerVideoMode(
 function ableToStartLargerVideoMode(v: HTMLVideoElement) {
   console.log("remain time: ", v.duration - v.currentTime);
 
-  return 10 <= v.duration - v.currentTime;
+  return (
+    10 <= v.duration - v.currentTime &&
+    !document.querySelector(".n2-video-container")
+  );
 }
 
 function isAlmostEndVideo(v: HTMLVideoElement) {
