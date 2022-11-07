@@ -129,6 +129,8 @@ async function startLargerVideoMode(v: HTMLVideoElement) {
     playerContainer.classList.add("n2-video-container");
     playerContainer.appendChild(v);
 
+    v.setAttribute("controls", "controls");
+
     {
       const btnExit = document.createElement("button");
       btnExit.textContent = "Exit";
