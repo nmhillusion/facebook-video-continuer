@@ -6,7 +6,8 @@ const STORE = {
     videoEl: null as HTMLVideoElement,
     parentVideoNode: null as HTMLElement,
   },
-  endVideoTimer: null as any,
+  startedZoomIn: false,
+  endVideoTimer: null as NodeJS.Timeout,
 };
 const URL_PATTERN = /https?:\/\/\w+\.facebook\.com\/watch.+?/;
 
@@ -116,6 +117,7 @@ function startEndedVideoTimer(v: HTMLVideoElement) {
 
 async function startLargerVideoMode(v: HTMLVideoElement) {
   if (ableToStartLargerVideoMode(v)) {
+    STORE.startedZoomIn = true;
     console.log("start pictureInPicture for video: ", v);
 
     getCurrentVideos().forEach((vL) => {
@@ -189,6 +191,14 @@ function main() {
 
       if (!STORE.endVideoTimer) {
         startEndedVideoTimer(v);
+      }
+    };
+
+    v.ontimeupdate = (_) => {
+      if (!STORE.startedZoomIn) {
+        console.log("start larger video for the first time start page");
+
+        startLargerVideoMode(v);
       }
     };
   });
